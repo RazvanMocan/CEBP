@@ -32,6 +32,10 @@ public class Transaction {
         format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
 
+    public String getTransType() {
+        return transType;
+    }
+
     public int getAmount() {
 
         return amount;

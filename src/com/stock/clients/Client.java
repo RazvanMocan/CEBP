@@ -4,6 +4,7 @@ import com.stock.transactions.Transaction;
 import com.stock.transactions.WallStreet;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Client implements Runnable {
@@ -40,7 +41,7 @@ public abstract class Client implements Runnable {
                         String name = readInput();
                         int amount = Integer.parseInt(readInput());
                         float price = Float.parseFloat(readInput());
-
+                        
                         doTransaction(new Transaction(name, amount, price, type));
                         break;
                     case "Transactions":
@@ -53,11 +54,14 @@ public abstract class Client implements Runnable {
                         sendList(broker.getBuyRequests());
                         break;
                 }
+                unregister();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    protected abstract void unregister();
 
     boolean isSearching(Transaction sell, Transaction buy) {
         Transaction transaction = broker.doTransaction(sell, buy);
