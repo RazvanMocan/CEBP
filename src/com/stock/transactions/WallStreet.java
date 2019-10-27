@@ -1,5 +1,5 @@
 package com.stock.transactions;
-import com.stock.ProtectedList;
+import com.stock.helper.ProtectedList;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.stock;
+package com.stock.helper;
 
 import sun.awt.Mutex;
 
@@ -10,8 +10,8 @@ public class ProtectedList<K> {
     private ArrayList<K> list;
 
     private static int nrReaders = 0;
-    private final static Mutex read = new Mutex();
-    private final static Mutex write = new Mutex();
+    private final  Mutex read = new Mutex();
+    private final Mutex write = new Mutex();
 
     public ProtectedList() {
         this.list = new ArrayList<>();
