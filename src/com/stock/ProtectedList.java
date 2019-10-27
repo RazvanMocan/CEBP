@@ -43,7 +43,7 @@ public class ProtectedList<K> {
 
     public List<K> getList() {
         startRead();
-        List<K> l = Collections.unmodifiableList(list);
+        List<K> l = new ArrayList<>(list);
         endRead();
         return l;
     }
