@@ -6,7 +6,7 @@ import com.stock.transactions.Transaction;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
+
 
 public class Seller extends Client implements Observer {
     public  Seller(Socket socket, BufferedReader in) throws IOException {
@@ -15,23 +15,22 @@ public class Seller extends Client implements Observer {
     }
 
     @Override
+    public boolean verifyReq(String type, float price) {
+        return type.equals("sold to ");
+    }
+
+    @Override
     protected void doTransaction(Transaction sell) {
+        broker.registerObserver(this);
         broker.addSellOffer(sell);
-
-        boolean searching = true;
-        Transaction buy;
-
-        while ( (buy = broker.getBuyOffer(sell.getPrice())) != null && searching )
-            searching = isSearching(sell, buy);
     }
 
     @Override
-    public List<String> getinterestedTypes() {
-        return null;
+    public void update(String type) {
     }
 
     @Override
-    public void update() {
-
+    protected void unregister() {
+        broker.unregisterObserver(this);
     }
 }

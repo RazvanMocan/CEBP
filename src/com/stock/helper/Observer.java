@@ -1,9 +1,8 @@
 package com.stock.helper;
 
-import java.util.List;
 
 public interface Observer {
-    void update();
+    void update(String type);
 
-    List<String> getinterestedTypes();
+    boolean verifyReq(String type, float price);
 }

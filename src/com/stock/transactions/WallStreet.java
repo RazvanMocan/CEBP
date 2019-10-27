@@ -1,6 +1,6 @@
 package com.stock.transactions;
+import com.stock.helper.Observer;
 import com.stock.helper.ProtectedList;
-
 import java.util.List;
 
 public class WallStreet {
@@ -8,10 +8,40 @@ public class WallStreet {
     private ProtectedList<Transaction> buyRequests;
     private ProtectedList<Transaction> terminated;
 
+    private ProtectedList<Observer> observerCollection;
+
     public WallStreet() {
         sellOffers = new ProtectedList<>();
         buyRequests = new ProtectedList<>();
         terminated = new ProtectedList<>();
+        observerCollection = new ProtectedList<>();
+    }
+
+    public  void registerObserver(Observer o) {
+        if (!observerCollection.contains(o))
+            observerCollection.add(o);
+    }
+
+
+    public  void unregisterObserver(Observer o) {
+        if (observerCollection.contains(o))
+            observerCollection.remove(o);
+    }
+
+    private void getObserversToNotify(List<Transaction> transactions) {
+        for (Transaction t : transactions) {
+            for (Observer observer : observerCollection.getList()) {
+                if (observer.verifyReq(t.getTransType(), t.getPrice()))
+                        observer.update(t.getTransType());
+            }
+        }
+    }
+
+    //TODO use decorator pattern(maybe look up a bit) fot verifying requirements
+    private synchronized void notifyObservers(Transaction t) {
+        getObserversToNotify(sellOffers.getList());
+        getObserversToNotify(buyRequests.getList());
+        getObserversToNotify(terminated.getList());
     }
 
     public List<Transaction> getSellOffers() {
@@ -28,11 +58,16 @@ public class WallStreet {
     }
 
     public void addSellOffer(Transaction t) {
-        sellOffers.add(t);
+        addOffer(sellOffers, t);
     }
 
     public void addBuyRequest(Transaction t) {
-        buyRequests.add(t);
+        addOffer(buyRequests, t);
+    }
+
+    private void addOffer(ProtectedList<Transaction> l, Transaction t) {
+        l.add(t);
+        notifyObservers(t);
     }
 
     public Transaction getSellOffer(float price) {
@@ -61,6 +96,7 @@ public class WallStreet {
         sellOffers.remove(sell);
         buyRequests.remove(buy);
         terminated.add(t);
+        notifyObservers(t);
         return true;
     }
 }

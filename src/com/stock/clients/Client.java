@@ -4,7 +4,7 @@ import com.stock.transactions.Transaction;
 import com.stock.transactions.WallStreet;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public abstract class Client implements Runnable {
@@ -34,6 +34,7 @@ public abstract class Client implements Runnable {
                 }
                 switch (command) {
                     case "end":
+                        unregister();
                         closeConnection();
                         end = true;
                         break;
@@ -54,7 +55,6 @@ public abstract class Client implements Runnable {
                         sendList(broker.getBuyRequests());
                         break;
                 }
-                unregister();
             } catch (IOException e) {
                 e.printStackTrace();
             }
