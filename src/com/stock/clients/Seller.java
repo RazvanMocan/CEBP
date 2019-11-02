@@ -9,13 +9,12 @@ import java.net.Socket;
 public class Seller extends Client {
     public  Seller(Socket socket, BufferedReader in) throws IOException {
         super(socket, in);
-        this.type = "sells";
+        this.type = "is selling";
     }
 
     @Override
     protected void doTransaction(Transaction sell) {
         broker.addSellOffer(sell);
-
         boolean searching = true;
         Transaction buy;
 

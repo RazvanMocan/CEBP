@@ -31,7 +31,14 @@ public class Transaction {
         date = new Date(System.currentTimeMillis());
         format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
-
+    public String getTransType()
+    {
+    	return transType;
+    }
+    public String getClientName()
+    {
+    	return clientName;
+    }
     public int getAmount() {
 
         return amount;

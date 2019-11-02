@@ -31,13 +31,15 @@ public abstract class Client implements Runnable {
                     closeConnection();
                     break;
                 }
+                String name;
                 switch (command) {
                     case "end":
                         closeConnection();
                         end = true;
                         break;
                     case "offer":
-                        String name = readInput();
+                        name = readInput();
+                        name = socket.toString();
                         int amount = Integer.parseInt(readInput());
                         float price = Float.parseFloat(readInput());
 
@@ -52,6 +54,15 @@ public abstract class Client implements Runnable {
                     case "Buy offers":
                         sendList(broker.getBuyRequests());
                         break;
+                    case "All offers":
+                    	System.out.println("fffffff");
+                        sendList(broker.getAllOffers());
+                        break;             
+                    case  "My offers":
+                    	name = socket.toString();
+                    	System.out.println("asdaaaaaaaaaaaaaaaaa");
+                        sendList(broker.getAllOffersMine(name));
+                        break;                      	
                 }
             } catch (IOException e) {
                 e.printStackTrace();

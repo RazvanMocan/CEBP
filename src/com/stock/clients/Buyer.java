@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Buyer extends Client {
     public Buyer(Socket socket, BufferedReader in) throws IOException {
         super(socket, in);
-        this.type = "buys";
+        this.type = "wants to buy";
     }
 
     @Override
