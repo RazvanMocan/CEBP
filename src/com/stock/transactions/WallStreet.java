@@ -1,21 +1,18 @@
 package com.stock.transactions;
 import com.stock.ProtectedList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WallStreet {
     private ProtectedList<Transaction> sellOffers;
     private ProtectedList<Transaction> buyRequests;
     private ProtectedList<Transaction> terminated;
-    private ProtectedList<Transaction> allOffers;
 
 
     public WallStreet() {
         sellOffers = new ProtectedList<>();
         buyRequests = new ProtectedList<>();
         terminated = new ProtectedList<>();
-        allOffers = new ProtectedList<>();
     }
 
     public List<Transaction> getSellOffers() {
@@ -27,49 +24,31 @@ public class WallStreet {
     }
     
     public List<Transaction> getAllOffers() {
-        return allOffers.getList();
+        List<Transaction> all = getSellOffers();
+        all.addAll(getBuyRequests());
+        return all;
     }
-
-    public List<Transaction> getAllOffersMine(String clientName) {
-    	ArrayList<Transaction> allOffersMine = new ArrayList<>();    	
-        for (Transaction i:allOffers.getList())
-        	{
-        	if(i.getClientName().equals(clientName))
-        		allOffersMine.add(i);
-        	    System.out.println(clientName + "aaaaa");
-        	}
-        return allOffersMine;
-    }    
     
     public List<Transaction> getTerminated() {
         return terminated.getList();
-
     }
 
     public void addSellOffer(Transaction t) {
-    	List<Transaction> allOffersMine = getAllOffersMine(t.getClientName());
-        for (Transaction i : allOffersMine)
-        	if(i.getPrice() == t.getPrice() && i.getTransType().equals(t.getTransType()))
-        		{
-        		System.out.println("got here1");        		
-        		sellOffers.remove(i);
-        		allOffers.remove(i);
-        		}
         sellOffers.add(t);
-        allOffers.add(t);
     }
 
     public void addBuyRequest(Transaction t) {
-    	List<Transaction> allOffersMine = getAllOffersMine(t.getClientName());
-        for (Transaction i : allOffersMine)
-        	if(i.getPrice() == t.getPrice() && i.getTransType().equals(t.getTransType()))
-        		{
-        		System.out.println("got here2");
-        		buyRequests.remove(i);
-        		allOffers.remove(i);
-        		}    	
         buyRequests.add(t);
-        allOffers.add(t);
+    }
+
+    public synchronized void removeAllSellOffers(List<Transaction> list) {
+        for (Transaction t : list)
+            sellOffers.remove(t);
+    }
+
+    public synchronized void removeAllBuyRequests(List<Transaction> list) {
+        for (Transaction t : list)
+            buyRequests.remove(t);
     }
 
 
@@ -94,13 +73,11 @@ public class WallStreet {
         return new Transaction(sell, buy);
     }
 
-    public boolean finishTransaction(Transaction t, Transaction sell, Transaction buy) {
+    public synchronized boolean finishTransaction(Transaction t, Transaction sell, Transaction buy) {
         if (!sellOffers.contains(sell) || !buyRequests.contains(buy))
             return false;
         sellOffers.remove(sell);
         buyRequests.remove(buy);
-        allOffers.remove(sell);
-        allOffers.remove(buy);
         terminated.add(t);
         return true;
     }
