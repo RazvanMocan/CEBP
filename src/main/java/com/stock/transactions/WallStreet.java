@@ -8,7 +8,6 @@ public class WallStreet {
     private ProtectedList<Transaction> buyRequests;
     private ProtectedList<Transaction> terminated;
 
-
     public WallStreet() {
         sellOffers = new ProtectedList<>();
         buyRequests = new ProtectedList<>();
@@ -51,7 +50,6 @@ public class WallStreet {
             buyRequests.remove(t);
     }
 
-
     public Transaction getSellOffer(float price) {
         return getOffer(price, sellOffers.getList());
     }
@@ -59,7 +57,6 @@ public class WallStreet {
     public Transaction getBuyOffer(float price) {
         return getOffer(price, buyRequests.getList());
     }
-
 
     private Transaction getOffer(float price, List<Transaction> offers) {
         for (Transaction offer : offers) {

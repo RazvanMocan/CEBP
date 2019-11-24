@@ -5,6 +5,7 @@ import com.stock.transactions.WallStreet;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class Client implements Runnable {
@@ -70,6 +71,7 @@ public abstract class Client implements Runnable {
                         sendList(broker.getAllOffers());
                         break;             
                     case  "My offers":
+                    	mytransactionList.removeIf(transaction -> transaction.getAmount() == 0);
                         sendList(mytransactionList);
                         break;                      	
                 }

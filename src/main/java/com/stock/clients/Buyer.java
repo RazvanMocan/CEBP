@@ -26,10 +26,10 @@ public class Buyer extends Client {
         boolean searching = true;
         Transaction sell;
 
-        while ( (sell = broker.getSellOffer(buy.getPrice())) != null && searching )
+        while ( (sell = broker.getSellOffer(buy.getPrice())) != null && ( searching || buy.getAmount() != 0 ) )
             searching = isSearching(sell, buy);
 
-        if (!searching)
+        if (buy.getAmount() == 0)
             mytransactionList.remove(buy);
     }
 }
