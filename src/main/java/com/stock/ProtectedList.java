@@ -19,17 +19,21 @@ public class ProtectedList<K> {
 
     private void startRead() {
         read.lock();
-        nrReaders++;
-        if (nrReaders == 1)
-            write.lock();
+        synchronized (this) {
+            nrReaders++;
+            if (nrReaders == 1)
+                write.lock();
+        }
         read.unlock();
     }
 
     private void endRead() {
         read.lock();
-        nrReaders--;
-        if (nrReaders == 0)
-            write.unlock();
+        synchronized (this) {
+            nrReaders--;
+            if (nrReaders == 0)
+                write.unlock();
+        }
         read.unlock();
     }
 
