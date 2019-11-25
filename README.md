@@ -20,5 +20,21 @@ From the point of view of the customer, things are very simple. The client is pr
 
 The project was written in Eclipse and Intellij using Java 8 and has been transformed into a Maven project in the meantime. The graphical user interface is provided by JavaFX. Some style was added with CSS to the default FX appearance as well as some positioning tweaks. The core of the project is composed of Java's websockets and sun.awt's Mutex.
 
+In terms of user management the algorithm used is pretty straightforward from the point of view of development. Considering that each thread has its associated socket created by the server resulted in the simple idea to use the socket for differentiating between users. Hence the port of the connection is the unique ID of the user. As a consequence, the state of the user actions cannot be saved since one socket may be allocated to the first user that logs in after the one that logs out now providing the users with inconsistencies. This project is about concurrency problems so a better user management solution was not found necessary so when an customer disconnects it is interpreted as deleting the account and all the transactions left unfinished.
+
+For the user to be able to control its thread a simple application layer protocol was developed. The protocol relies on the TCP transfer protocol because no data is sent unnecessary. The following represent the description of the protocol:
+
+#### Server
+* Waits for the client to send its type
+* Each client thread is in idle mode waiting for instructions. Depending on the instruction received it will 
+* Transactions, Sell offers, Buy offers, All offers, My offers are used to get the required list. When the server receives one of this instruction it sends the size of the list followed by the result of toString method applied to each element from the list(one per line)
+* offer instructs the server that an offer is comming so it will read, in this order, the name(ID) of the user, the price and amount of transaction. The name may be followed by index + the index of the transaction that needs to be updated
+* end or a null input will allow the server to close the socket associated to that user, the input and output streams used for communication, the list of transaction of that user and all unfinished transactions
+
+#### Client
+* Sends its type to the server right after it connects(connection starts only after the user chooses the type)
+* When the user presses the item in the menu for any list it will send the corresponding instruction
+* When start transaction is pressed the ID of the user, the amount and price introduced are sent. If the user selected an entry in My Transactions beforehand the ID will be appended with index + the index of that transaction and in this case it will be updated rather than added
+* When the user closes the app it automatically sends end message to the server
 
 ### Concurrency problems
