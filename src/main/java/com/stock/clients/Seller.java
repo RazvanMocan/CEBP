@@ -8,6 +8,11 @@ import java.net.Socket;
 import java.util.List;
 
 public class Seller extends Client {
+    @Override
+    protected boolean removeTransaction(Transaction myTransaction) {
+        return broker.removeSellOffer(myTransaction);
+    }
+
     public  Seller(Socket socket, BufferedReader in) throws IOException {
         super(socket, in);
         this.type = "is selling";
@@ -25,10 +30,10 @@ public class Seller extends Client {
         boolean searching = true;
         Transaction buy;
 
-        while ( (buy = broker.getBuyOffer(sell.getPrice())) != null && (searching || sell.getAmount() != 0 ) )
+        while ( (buy = broker.getBuyOffer(sell.getPrice())) != null && searching )
             searching = isSearching(sell, buy);
 
-        if (sell.getAmount() == 0)
+        if (!searching)
             mytransactionList.remove(sell);
     }
 }

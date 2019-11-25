@@ -78,4 +78,12 @@ public class WallStreet {
         terminated.add(t);
         return true;
     }
+
+    public boolean removeBuyRequest(Transaction myTransaction) {
+        return buyRequests.remove(myTransaction);
+    }
+
+    public boolean removeSellOffer(Transaction myTransaction) {
+        return sellOffers.remove(myTransaction);
+    }
 }

@@ -14,6 +14,11 @@ public class Buyer extends Client {
     }
 
     @Override
+    protected boolean removeTransaction(Transaction myTransaction) {
+        return broker.removeBuyRequest(myTransaction);
+    }
+
+    @Override
     protected void removeTransactions(List<Transaction> myTransactions) {
         broker.removeAllBuyRequests(myTransactions);
     }
@@ -26,10 +31,10 @@ public class Buyer extends Client {
         boolean searching = true;
         Transaction sell;
 
-        while ( (sell = broker.getSellOffer(buy.getPrice())) != null && ( searching || buy.getAmount() != 0 ) )
+        while ( (sell = broker.getSellOffer(buy.getPrice())) != null && searching)
             searching = isSearching(sell, buy);
 
-        if (buy.getAmount() == 0)
+        if (!searching)
             mytransactionList.remove(buy);
     }
 }

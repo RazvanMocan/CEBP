@@ -5,7 +5,6 @@ import com.stock.transactions.WallStreet;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public abstract class Client implements Runnable {
@@ -45,18 +44,17 @@ public abstract class Client implements Runnable {
                         name = readInput();
                         int amount = Integer.parseInt(readInput());
                         float price = Float.parseFloat(readInput());
-                        
+
                         if (name.contains("index")) {
                             String[] split = name.split(" index ");
                             int index = Integer.parseInt(split[1]);
                             name = split[0];
-                            List <Transaction> list = new ArrayList<>();
-                            list.add(mytransactionList.get(index));
-                            removeTransactions(list);
-                            mytransactionList.remove(index);
-                        }
-
-                        doTransaction(new Transaction(name, amount, price, type));
+                            if( removeTransaction(mytransactionList.get(index))) {
+                                mytransactionList.remove(index);
+                                doTransaction(new Transaction(name, amount, price, type));
+                            }
+                        } else
+                            doTransaction(new Transaction(name, amount, price, type));
                         break;
                     case "Transactions":
                         sendList(broker.getTerminated());
@@ -69,11 +67,11 @@ public abstract class Client implements Runnable {
                         break;
                     case "All offers":
                         sendList(broker.getAllOffers());
-                        break;             
+                        break;
                     case  "My offers":
                     	mytransactionList.removeIf(transaction -> transaction.getAmount() == 0);
                         sendList(mytransactionList);
-                        break;                      	
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -119,5 +117,5 @@ public abstract class Client implements Runnable {
 
     protected abstract void removeTransactions(List<Transaction> myTransactions);
 
-
+    protected abstract boolean removeTransaction(Transaction myTransaction);
 }

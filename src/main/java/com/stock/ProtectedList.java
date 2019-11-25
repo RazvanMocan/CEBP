@@ -62,9 +62,10 @@ public class ProtectedList<K> {
         return answer;
     }
 
-    public void remove(K t) {
+    public boolean remove(K t) {
         startWrite();
-        list.remove(t);
+        boolean result = list.remove(t);
         endWrite();
+        return result;
     }
 }
