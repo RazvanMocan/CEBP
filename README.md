@@ -2,6 +2,17 @@
 
 Stock exchange project for university for learning and demonstrating concurrent and event based programming skills.  
 
+# Team
+Project: Stock exchange
+
+Team Name: 404 not found
+
+Members:
+* Balu Alexandra
+* Bulzan Andrei
+* Gaman Rares
+* Mocan Razvan
+
 # Documentation
 
 ###Architecture of the project
@@ -38,4 +49,8 @@ For the user to be able to control its thread a simple application layer protoco
 * When the user closes the app it automatically sends end message to the server
 
 ### Concurrency problems
-The server models a database of transaction where each client can add and read transactions whenever they want. The first idea was to implement a Producer-Consumer pattern, I could not find a way to get the maximum size of an ArrayList so we switch to Reader-Writer pattern. The user base that we could gather in the first place is small so the database is small enough to fit in memory and was model using a List. We created a thread safe list(hence the pattern used) from scratch because using an object from Java seemed too easy for a project that should demonstrate our mastery of the subject. The locks for reading and writing were of type Mutex, but the class was changed to ReentrantLock as it failed to do its job during testing. This was the only problem found during design phase. Any number of readers should be able to access the data at the same time, while writers should be prevented to write due to inconsistencies that may appear. The vice-versa is true, while one writer at a time is generating data, readers should be stopped.
+The server models a database of transaction where each client can add and read transactions whenever they want. The first idea was to implement a Producer-Consumer pattern, I could not find a way to get the maximum size of an ArrayList so we switch to Reader-Writer pattern. The user base that we could gather in the first place is small so the database is small enough to fit in memory and was model using a List. We created a thread safe list(hence the pattern used) from scratch because using an object from Java seemed too easy for a project that should demonstrate our mastery of the subject. The locks for reading and writing were of type Mutex, but the class was changed to ReentrantLock as it failed to do its job during testing. This was the only problem found during design phase. Any number of readers should be able to access the data at the same time, while writers should be prevented to write due to inconsistencies that may appear. The vice-versa is true, while one writer at a time is generating data, readers should be stopped. ReentrantLocks also have a fair parameter so a starvation problem should not appear. Threads do not have to wait for one another and do not use 2 resources simultaneously so the problems of live and dead lock are not possible.
+
+Readers will get a new list(just a shallow copy because the object not being modified in any other place was assured by us) so any action with respect to that list won't need any synchronization. 
+
+During the implementation we stumbled across a part of code that will delete 1 request and 1 offer from each respective list if the ones that we are searching for are still available, combine them in a finished transaction and update that respective list. The problem with this was that any time between the first check and the last deletion from the list another thread could have taken that respective transaction away. Deletion was possible only inside this method that we are taking about and the 2 methods that we are calling, also called when a client decides to update one of its transaction, that may happen during the time we are ending one transaction using the offer to be modified. Hence the broker object is static in each thread we can use intrinsic lock to synchronize the methods(we have just 1 object sa the lock is already shared we do not need to create another one).  
