@@ -26,7 +26,7 @@ For the user to be able to control its thread a simple application layer protoco
 
 #### Server
 * Waits for the client to send its type
-* Each client thread is in idle mode waiting for instructions. Depending on the instruction received it will 
+* Each client thread is in idle mode waiting for instructions. Depending on the instruction received it will doone of the following:
 * Transactions, Sell offers, Buy offers, All offers, My offers are used to get the required list. When the server receives one of this instruction it sends the size of the list followed by the result of toString method applied to each element from the list(one per line)
 * offer instructs the server that an offer is comming so it will read, in this order, the name(ID) of the user, the price and amount of transaction. The name may be followed by index + the index of the transaction that needs to be updated
 * end or a null input will allow the server to close the socket associated to that user, the input and output streams used for communication, the list of transaction of that user and all unfinished transactions
@@ -38,3 +38,4 @@ For the user to be able to control its thread a simple application layer protoco
 * When the user closes the app it automatically sends end message to the server
 
 ### Concurrency problems
+The server models a database of transaction where each client can add and read transactions whenever they want. The first idea was to implement a Producer-Comsumer pattern, as using thread safe objects from java seemed too easy. I could not find a way to get the maximum size of an ArrayList so we switch to a Reader-Writer pattern. The user base that we could gather in the first place is small so the database was model with a List, because we assumed that the memory will be enough at all times.
