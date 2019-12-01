@@ -9,8 +9,8 @@ public class ProtectedList<K> {
     private ArrayList<K> list;
 
     private static int nrReaders = 0;
-    private final Lock read = new ReentrantLock();
-    private final Lock write = new ReentrantLock();
+    private final Lock read = new ReentrantLock(true);
+    private final Lock write = new ReentrantLock(true);
 
     public ProtectedList() {
         this.list = new ArrayList<>();
