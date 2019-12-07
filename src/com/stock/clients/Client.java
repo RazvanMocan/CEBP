@@ -43,7 +43,7 @@ public abstract class Client implements Runnable {
                         int amount = Integer.parseInt(readInput());
                         float price = Float.parseFloat(readInput());
                         
-                        doTransaction(new Transaction(name, amount, price, type));
+                        doTransaction(new Transaction(name, amount, price, type, socket));
                         break;
                     case "Transactions":
                         sendList(broker.getTerminated());
