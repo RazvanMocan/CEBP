@@ -62,7 +62,9 @@ public abstract class Client implements Runnable {
     }
 
     protected abstract void unregister();
-
+    public PrintWriter getWriter(){
+        return this.writer;
+    }
     boolean isSearching(Transaction sell, Transaction buy) {
         Transaction transaction = broker.doTransaction(sell, buy);
         if (broker.finishTransaction(transaction, sell, buy)) {
