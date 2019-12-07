@@ -41,7 +41,18 @@ public class Transaction {
         date = new Date(System.currentTimeMillis());
         format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
-
+    public Socket getClientSocket1(){
+        return this.clientSocket;
+    }
+    public Socket getClientSocket2(){
+        return this.secondClientSocket;
+    }
+    public PrintWriter getClientWriter1(){
+        return this.clientWriter;
+    }
+    public PrintWriter getClientWriter2(){
+        return this.secondClientWriter;
+    }     
     public String getTransType() {
         return transType;
     }
