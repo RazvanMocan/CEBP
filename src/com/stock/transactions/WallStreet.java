@@ -43,7 +43,11 @@ public class WallStreet {
         getObserversToNotify(buyRequests.getList());
         getObserversToNotify(terminated.getList());
     }
-
+    private void notifyClients(Transaction t)
+    {
+        t.getClientWriter1.println("Transaction finished with " + t.getClientName2());
+        t.getClientWriter2.println("Transaction finished with " + t.getClientName1());
+    }
     public List<Transaction> getSellOffers() {
         return sellOffers.getList();
     }
@@ -97,6 +101,7 @@ public class WallStreet {
         buyRequests.remove(buy);
         terminated.add(t);
         notifyObservers(t);
+        notifyClients(t);
         return true;
     }
 }
