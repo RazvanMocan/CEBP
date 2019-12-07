@@ -5,7 +5,9 @@ import java.util.Date;
 
 public class Transaction {
     private String clientName;
+    private Socket clientSocket;
     private String secondClient = null;
+    private Socket secondClientSocket = null;
     private int amount;
     private float price;
     private String transType;
@@ -13,8 +15,9 @@ public class Transaction {
 
     private SimpleDateFormat format;
 
-    public Transaction(String clientName, int amount, float price, String type) {
+    public Transaction(String clientName, int amount, float price, String type, Socket socket) {
         this.clientName = clientName;
+        this.clientSocket = socket;
         this.amount = amount;
         this.price = price;
         transType = type;
@@ -25,6 +28,8 @@ public class Transaction {
     Transaction(Transaction sell, Transaction buy) {
         this.clientName = sell.clientName;
         this.secondClient = buy.clientName;
+        this.clientSocket = sell.clientSocket;
+        this.secondClientSocket = buy.clientSocket;
         this.price = sell.price;
         this.amount = Math.min(sell.amount, buy.amount);
         transType = "sold to ";
