@@ -47,6 +47,12 @@ public class Transaction {
     public Socket getClientSocket2(){
         return this.secondClientSocket;
     }
+    public Socket getClientName1(){
+        return this.clientName;
+    }
+    public Socket getClientName2(){
+        return this.secondClientName;
+    }    
     public PrintWriter getClientWriter1(){
         return this.clientWriter;
     }
