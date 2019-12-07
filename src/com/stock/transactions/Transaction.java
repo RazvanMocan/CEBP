@@ -21,7 +21,7 @@ public class Transaction {
         date = new Date(System.currentTimeMillis());
         format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
-
+    
     Transaction(Transaction sell, Transaction buy) {
         this.clientName = sell.clientName;
         this.secondClient = buy.clientName;
@@ -31,7 +31,14 @@ public class Transaction {
         date = new Date(System.currentTimeMillis());
         format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     }
-
+    public String getClient1()
+    {
+        return this.clientName;
+    }
+    public String getClient2()
+    {
+        return this.secondClient;
+    }    
     public String getTransType() {
         return transType;
     }
