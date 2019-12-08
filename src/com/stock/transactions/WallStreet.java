@@ -1,6 +1,8 @@
 package com.stock.transactions;
 import com.stock.helper.Observer;
 import com.stock.helper.ProtectedList;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class WallStreet {
@@ -29,10 +31,13 @@ public class WallStreet {
     }
 
     private void getObserversToNotify(List<Transaction> transactions) {
-        for (Transaction t : transactions) {
-            for (Observer observer : observerCollection.getList()) {
-                if (observer.verifyReq(t.getTransType(), t.getPrice()))
-                        observer.update(t.getTransType());
+
+        for (Observer observer : observerCollection.getList()) {
+            for (Transaction t : transactions) {
+                if (observer.verifyReq(t.getTransType(), t.getPrice())) {
+                    observer.update(t.getTransType());
+                    break;
+                }
             }
         }
     }
@@ -86,7 +91,9 @@ public class WallStreet {
         sellOffers.remove(sell);
         buyRequests.remove(buy);
         terminated.add(t);
-        getObserversToNotify(terminated.getList());
+        List<Transaction> l = new ArrayList<>();
+        l.add(t);
+        getObserversToNotify(l);
         return true;
     }
 }

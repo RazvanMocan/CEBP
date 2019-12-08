@@ -39,7 +39,7 @@ public class Buyer extends Client implements Observer {
     }
 
     @Override
-    public void update(String type) {
+    public synchronized void update(String type) {
         if (type.equals("sold to ")) {
             System.out.println("sold finished");
             sendMsg("notifTransaction finished");
@@ -57,7 +57,6 @@ public class Buyer extends Client implements Observer {
                         System.out.println("Transaction done");
                         break;
                     }
-                    // TODO Add some communication with the client
                 }
             }
         }
