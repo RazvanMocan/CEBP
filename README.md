@@ -15,6 +15,9 @@ Members:
 
 # Documentation
 
+### Task Management
+We’ve met during courses and a couple of minutes after courses in the first few weeks after picking the project and we discussed best ways of approaching the project. After getting a vague idea about how things should look like, we met at the library and started the implementation together. The basic program was done in the same day (and an initial commit was made). We agreed to all test the program and think about ways of improving it during the following weeks, but with each person focusing on somewhat different things. Răzvan focused on the concurrency problem and the optimization of resource usage when writing to the mutex-protected lists. Andrei focused on missing implementation (making sure there is none) and assuring that all the specified functionality is available in the program. Rareș focused on refactoring inefficient code and testing functionality in order to find and fix any bugs that would appear. Alexandra focused on the user experience part, making sure that the user needs to do as little work as possible in order to achieve his goal of adding, removing, changing an offer. Any change that was to be made was first discussed with the entire team. The suggestions for changing/adding something would more often than not end up being either rehauled completely before making it to the final program, or disregarded altogether (Were not necessary, were  too difficult to implement, were redundant, etc.)
+
 ###Architecture of the project
 
 In order to model the stock market we've split the application into 2 separate programs. One program that will be running 
@@ -54,3 +57,37 @@ The server models a database of transaction where each client can add and read t
 Readers will get a new list(just a shallow copy because the object not being modified in any other place was assured by us) so any action with respect to that list won't need any synchronization. 
 
 During the implementation we stumbled across a part of code that will delete 1 request and 1 offer from each respective list if the ones that we are searching for are still available, combine them in a finished transaction and update that respective list. The problem with this was that any time between the first check and the last deletion from the list another thread could have taken that respective transaction away. Deletion was possible only inside this method that we are taking about and the 2 methods that we are calling, also called when a client decides to update one of its transaction, that may happen during the time we are ending one transaction using the offer to be modified. Hence the broker object is static in each thread we can use intrinsic lock to synchronize the methods(we have just 1 object sa the lock is already shared we do not need to create another one).  
+
+### Reader-Writer explanation
+
+```
+private void startRead() {
+        read.lock();
+        nrReaders++;
+        if (nrReaders == 1)
+            write.lock();
+        read.unlock();
+    }
+
+private void endRead() {
+        read.lock();
+        nrReaders--;
+        if (nrReaders == 0)
+            write.unlock();
+        read.unlock();
+    }
+```
+
+As explained earlier, this pattern let's multiple reader read the data simultaneously, but only one writer at a time. To do this we need a writer lock. If a reader acquires this lock, then a writer will wait. But one reader is enough to acquire this lock, otherwise the readers will wait as well. For this reason we use nrReaders. with this we ensure that the first reader gets the lock and the last releases it. But every thread can update this variable. This can lead to other concurrent related issues. To solve this, we use the reader lock so that only one reader can update the counter at a time. The lock is released only after the check otherwise one thread could update the value while a second one tries to read the value resulting in other inconsistencies.
+
+```
+    private void startWrite() {
+        write.lock();
+    }
+
+    private void endWrite() {
+        write.unlock();
+    }
+```
+
+A writer simply tries to lock on the write lock. If it succeeds, one potential reader thread will wait to acquire the lock, just after the check, and other will wait to get the read lock to update the counter and start the task.
