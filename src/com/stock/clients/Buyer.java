@@ -7,7 +7,6 @@ import com.stock.transactions.Transaction;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Iterator;
 import java.util.List;
 
 public class Buyer extends Client implements Observer {
@@ -43,19 +42,18 @@ public class Buyer extends Client implements Observer {
     public void update(String type) {
         if (type.equals("sold to ")) {
             System.out.println("sold finished");
+            sendMsg("notifTransaction finished");
         }
         else {
             System.out.println("intrat");
             List<Transaction> min = mine.getList();
             for (Transaction buy : min) {
                 Transaction sell = broker.getSellOffer(buy.getPrice());
-                System.out.println(sell);
                 if (sell != null) {
-                    boolean cacat;
-                    if ((cacat = this.isSearching(sell,buy))) {
+                    if (!this.isSearching(sell,buy)) {
                         if (buy.getAmount() == 0)
                             mine.remove(buy);
-                        System.out.println(cacat);
+
                         System.out.println("Transaction done");
                         break;
                     }

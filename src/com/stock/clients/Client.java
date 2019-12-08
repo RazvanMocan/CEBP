@@ -21,6 +21,11 @@ public abstract class Client implements Runnable {
         writer = new PrintWriter(socket.getOutputStream(), true);
     }
 
+    protected void sendMsg(String msg) {
+        writer.println(msg);
+    }
+
+
     @Override
     public void run() {
         boolean end = false;
@@ -30,6 +35,7 @@ public abstract class Client implements Runnable {
                 command = readInput();
                 if (command == null) {
                     closeConnection();
+                    end = true;
                     break;
                 }
                 switch (command) {
@@ -56,6 +62,11 @@ public abstract class Client implements Runnable {
                         break;
                 }
             } catch (IOException e) {
+                try {
+                    closeConnection();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 e.printStackTrace();
             }
         }

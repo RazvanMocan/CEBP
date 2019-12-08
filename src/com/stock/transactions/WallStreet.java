@@ -37,13 +37,6 @@ public class WallStreet {
         }
     }
 
-    //TODO use decorator pattern(maybe look up a bit) fot verifying requirements
-    private synchronized void notifyObservers(Transaction t) {
-        getObserversToNotify(sellOffers.getList());
-        getObserversToNotify(buyRequests.getList());
-        getObserversToNotify(terminated.getList());
-    }
-
     public List<Transaction> getSellOffers() {
         return sellOffers.getList();
     }
@@ -58,16 +51,13 @@ public class WallStreet {
     }
 
     public void addSellOffer(Transaction t) {
-        addOffer(sellOffers, t);
+        sellOffers.add(t);
+        getObserversToNotify(buyRequests.getList());
     }
 
     public void addBuyRequest(Transaction t) {
-        addOffer(buyRequests, t);
-    }
-
-    private void addOffer(ProtectedList<Transaction> l, Transaction t) {
-        l.add(t);
-        notifyObservers(t);
+        buyRequests.add(t);
+        getObserversToNotify(sellOffers.getList());
     }
 
     public Transaction getSellOffer(float price) {
@@ -96,7 +86,7 @@ public class WallStreet {
         sellOffers.remove(sell);
         buyRequests.remove(buy);
         terminated.add(t);
-        notifyObservers(t);
+        getObserversToNotify(terminated.getList());
         return true;
     }
 }
