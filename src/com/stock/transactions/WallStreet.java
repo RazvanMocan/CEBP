@@ -1,15 +1,16 @@
 package com.stock.transactions;
-import com.stock.helper.Observer;
-import com.stock.helper.ProtectedList;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.stock.helper.Observer;
+import com.stock.helper.ProtectedList;
+
 public class WallStreet {
+	
     private ProtectedList<Transaction> sellOffers;
     private ProtectedList<Transaction> buyRequests;
     private ProtectedList<Transaction> terminated;
-
+    
     private ProtectedList<Observer> observerCollection;
 
     public WallStreet() {
@@ -18,12 +19,11 @@ public class WallStreet {
         terminated = new ProtectedList<>();
         observerCollection = new ProtectedList<>();
     }
-
+    
     public  void registerObserver(Observer o) {
         if (!observerCollection.contains(o))
             observerCollection.add(o);
     }
-
 
     public  void unregisterObserver(Observer o) {
         if (observerCollection.contains(o))
@@ -49,10 +49,15 @@ public class WallStreet {
     public List<Transaction> getBuyRequests() {
         return buyRequests.getList();
     }
-
+    
+    public List<Transaction> getAllOffers() {
+        List<Transaction> all = getSellOffers();
+        all.addAll(getBuyRequests());
+        return all;
+    }
+    
     public List<Transaction> getTerminated() {
         return terminated.getList();
-
     }
 
     public void addSellOffer(Transaction t) {
@@ -63,7 +68,16 @@ public class WallStreet {
 
     public void addBuyRequest(Transaction t) {
         buyRequests.add(t);
-        getObserversToNotify(sellOffers.getList());
+    }
+
+    public synchronized void removeAllSellOffers(List<Transaction> list) {
+        for (Transaction t : list)
+            sellOffers.remove(t);
+    }
+
+    public synchronized void removeAllBuyRequests(List<Transaction> list) {
+        for (Transaction t : list)
+            buyRequests.remove(t);
     }
 
     public Transaction getSellOffer(float price) {
@@ -72,6 +86,14 @@ public class WallStreet {
 
     public Transaction getBuyOffer(float price) {
         return getOffer(price, buyRequests.getList());
+    }
+    
+    public boolean removeBuyRequest(Transaction myTransaction) {
+        return buyRequests.remove(myTransaction);
+    }
+
+    public boolean removeSellOffer(Transaction myTransaction) {
+        return sellOffers.remove(myTransaction);
     }
 
     private Transaction getOffer(float price, List<Transaction> offers) {
@@ -86,7 +108,7 @@ public class WallStreet {
         return new Transaction(sell, buy);
     }
 
-    public boolean finishTransaction(Transaction t, Transaction sell, Transaction buy) {
+    public synchronized boolean finishTransaction(Transaction t, Transaction sell, Transaction buy) {
         if (!sellOffers.contains(sell) || !buyRequests.contains(buy))
             return false;
         sellOffers.remove(sell);
@@ -97,4 +119,5 @@ public class WallStreet {
         getObserversToNotify(l);
         return true;
     }
+    
 }

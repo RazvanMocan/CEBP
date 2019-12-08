@@ -19,6 +19,7 @@ public class Main {
                 Socket client = serverSocket.accept();
 
                 Client stockClient = getClient(client);
+                System.out.println(stockClient);
                 new Thread(stockClient).start();
             }
         } catch(IOException e) {
@@ -31,7 +32,7 @@ public class Main {
                 new InputStreamReader(client.getInputStream()));
 
         String clientType = input.readLine();
-
+        System.out.println(client);
         if (clientType.equals("Seller"))
             return new Seller(client, input);
         else if (clientType.equals("Buyer"))

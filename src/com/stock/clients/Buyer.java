@@ -1,7 +1,6 @@
 package com.stock.clients;
 
 import com.stock.helper.Observer;
-import com.stock.helper.ProtectedList;
 import com.stock.transactions.Transaction;
 
 import java.io.BufferedReader;
@@ -10,14 +9,12 @@ import java.net.Socket;
 import java.util.List;
 
 public class Buyer extends Client implements Observer {
-    private ProtectedList<Transaction> mine;
-
+	
     public Buyer(Socket socket, BufferedReader in) throws IOException {
         super(socket, in);
-        this.type = "buys";
-        mine = new ProtectedList<>();
+        this.type = "wants to buy";
     }
-
+    
     @Override
     public boolean verifyReq(String type, float price) {
         if (type.equals("sold to "))
@@ -32,12 +29,32 @@ public class Buyer extends Client implements Observer {
     }
 
     @Override
-    protected void doTransaction(Transaction buy) {
-        broker.registerObserver(this);
-        mine.add(buy);
-        broker.addBuyRequest(buy);
+    protected boolean removeTransaction(Transaction myTransaction) {
+        return broker.removeBuyRequest(myTransaction);
     }
 
+    @Override
+    protected void removeTransactions(List<Transaction> myTransactions) {
+        broker.removeAllBuyRequests(myTransactions);
+    }
+
+    @Override
+    protected void doTransaction(Transaction buy) {
+    	
+    	broker.registerObserver(this);
+        broker.addBuyRequest(buy);
+        mytransactionList.add(buy);
+
+        boolean searching = true;
+        Transaction sell;
+
+        while ( (sell = broker.getSellOffer(buy.getPrice())) != null && searching)
+            searching = isSearching(sell, buy);
+
+        if (!searching)
+            mytransactionList.remove(buy);
+    }
+    
     @Override
     public synchronized void update(String type) {
         if (type.equals("sold to ")) {
@@ -46,13 +63,13 @@ public class Buyer extends Client implements Observer {
         }
         else {
             System.out.println("intrat");
-            List<Transaction> min = mine.getList();
+            List<Transaction> min = mytransactionList;
             for (Transaction buy : min) {
                 Transaction sell = broker.getSellOffer(buy.getPrice());
                 if (sell != null) {
                     if (!this.isSearching(sell,buy)) {
                         if (buy.getAmount() == 0)
-                            mine.remove(buy);
+                        	mytransactionList.remove(buy);
 
                         System.out.println("Transaction done");
                         break;
@@ -61,9 +78,10 @@ public class Buyer extends Client implements Observer {
             }
         }
     }
-
+    
     @Override
     protected void unregister() {
         broker.unregisterObserver(this);
     }
+    
 }

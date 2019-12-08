@@ -1,17 +1,16 @@
 package com.stock.helper;
 
-import sun.awt.Mutex;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ProtectedList<K> {
     private ArrayList<K> list;
 
     private static int nrReaders = 0;
-    private final  Mutex read = new Mutex();
-    private final Mutex write = new Mutex();
+    private final Lock read = new ReentrantLock(true);
+    private final Lock write = new ReentrantLock(true);
 
     public ProtectedList() {
         this.list = new ArrayList<>();
@@ -62,9 +61,10 @@ public class ProtectedList<K> {
         return answer;
     }
 
-    public void remove(K t) {
+    public boolean remove(K t) {
         startWrite();
-        list.remove(t);
+        boolean result = list.remove(t);
         endWrite();
+        return result;
     }
 }
