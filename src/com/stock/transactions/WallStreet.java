@@ -58,6 +58,7 @@ public class WallStreet {
     public void addSellOffer(Transaction t) {
         sellOffers.add(t);
         getObserversToNotify(buyRequests.getList());
+        getObserversToNotify(sellOffers.getList());
     }
 
     public void addBuyRequest(Transaction t) {
